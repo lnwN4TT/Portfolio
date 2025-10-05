@@ -19,7 +19,7 @@
     <script src="https://cdn.jsdelivr.net/npm/lil-gui@0.17"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/RGBELoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 
     <script>
         const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -36,13 +36,15 @@
 
         // Camera
         const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(100, 300, 0);
-        targetPos.set(40, 135, 40);         // ตำแหน่งกล้องที่อยากไป
+        camera.position.set(300, 135, 300);
+        targetPos.set(300, 135, 300);         // ตำแหน่งกล้องที่อยากไป
         const controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.target.set(-180, 135, 40);
         targetLookAt.set(-180, 135, 40);
         controls.enableDamping = true;
         controls.update();
+
+        controls.enabled = false;
 
         // Lights
         const ambient = new THREE.AmbientLight(0x404040, 1);
@@ -70,6 +72,51 @@
         spotLight.decay = 2;
         spotLight.distance = 500;
         scene.add(spotLight);
+
+        const spotLightKnife = new THREE.SpotLight(0xffffff, 1);
+        spotLightKnife.position.set(-40, 185, -500);
+        spotLightKnife.castShadow = true;
+        spotLightKnife.penumbra = 0.3;
+        spotLightKnife.decay = 2;
+        spotLightKnife.distance = 500;
+        spotLightKnife.power = 0;
+        scene.add(spotLightKnife);
+
+        const spotLightM4 = new THREE.SpotLight(0xffffff, 1);
+        spotLightM4.position.set(-30, 185, -520);
+        spotLightM4.castShadow = true;
+        spotLightM4.penumbra = 0.3;
+        spotLightM4.decay = 2;
+        spotLightM4.distance = 500;
+        spotLightM4.power = 0;
+        scene.add(spotLightM4);
+
+        const spotLightEagle = new THREE.SpotLight(0xffffff, 1);
+        spotLightEagle.position.set(-15, 185, -535);
+        spotLightEagle.castShadow = true;
+        spotLightEagle.penumbra = 0.3;
+        spotLightEagle.decay = 2;
+        spotLightEagle.distance = 500;
+        spotLightEagle.power = 0;
+        scene.add(spotLightEagle);
+
+        const spotLightfiveseven = new THREE.SpotLight(0xffffff, 1);
+        spotLightfiveseven.position.set(-15, 185, -535);
+        spotLightfiveseven.castShadow = true;
+        spotLightfiveseven.penumbra = 0.3;
+        spotLightfiveseven.decay = 2;
+        spotLightfiveseven.distance = 500;
+        spotLightfiveseven.power = 0;
+        scene.add(spotLightfiveseven);
+
+        const spotLightterrorist = new THREE.SpotLight(0xffffff, 1);
+        spotLightterrorist.position.set(40, 205, -550);
+        spotLightterrorist.castShadow = true;
+        spotLightterrorist.penumbra = 0.3;
+        //spotLightterrorist.decay = 2;
+        spotLightterrorist.distance = 500;
+        spotLightterrorist.power = 0;
+        scene.add(spotLightterrorist);
 
         //ปรับตามขนาดจอ
         function setPointer(e) {
@@ -147,17 +194,49 @@
             objLoader.load("medal.obj", function (object_medal) {
                 medal = object_medal;  // เก็บไว้ในตัวแปรด้านนอก
                 medal.scale.set(20, 20, 20);
-                medal.position.set(-25, 110, 30);
+                medal.position.set(-25, 80, 30);
                 medal.rotation.y = Math.PI / 2;
 
                 medal.traverse(function (child) {
                     if (child.isMesh) {
-                        child.castShadow = true;   // ให้เหรียญสร้างเงา
-                        child.receiveShadow = false; // ปกติไม่ต้องรับเงาตัวเอง
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+
+                        const oldMat = child.material;
+                        child.material = new THREE.MeshStandardMaterial({
+                            map: oldMat.map,
+                            metalness: 1,       // 1 = โลหะเต็ม ๆ
+                            roughness: 0.4        // 0 = เงามาก, 1 = ด้าน
+                        });
                     }
                 });
                 scene.add(medal);
                 clickableObjects.push(medal);
+            });
+        });
+
+        let arrowMedal;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("arrow.mtl", function (arrowMaterials) {
+            arrowMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(arrowMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("arrow.obj", function (object_arrow) {
+                arrowMedal = object_arrow;  // เก็บไว้ในตัวแปรด้านนอก
+                arrowMedal.scale.set(7, 7, 7);
+                arrowMedal.position.set(-25, 150, 32);
+                //arrowMedal.rotation.y = Math.PI / 2;
+
+                arrowMedal.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(arrowMedal);
             });
         });
 
@@ -185,7 +264,7 @@
             objLoader.load("aboutMe.obj", function (object_aboutme) {
                 aboutMe = object_aboutme;  // เก็บไว้ในตัวแปรด้านนอก
                 aboutMe.scale.set(10, 10, 10);
-                aboutMe.position.set(-25, 120, 60);
+                aboutMe.position.set(-25, 127.5, 60);
                 aboutMe.rotation.y = Math.PI / 2;
 
                 aboutMe.traverse(function (child) {
@@ -197,6 +276,42 @@
 
                 scene.add(aboutMe);
                 clickableObjects.push(aboutMe);
+            });
+        });
+
+        const geo2 = new THREE.BoxGeometry(100, 50, 0.1);
+        const mat2 = new THREE.MeshBasicMaterial({ color: 0x000000 });
+        const cube2 = new THREE.Mesh(geo2, mat2); // ใช้ geo2 และ mat2
+        cube2.scale.set(2, 2, 2);
+        cube2.position.set(280, 135, 280);
+        cube2.rotation.x = 0;
+        cube2.rotation.y = Math.PI / 4; // 45 องศาต้องแปลงเป็นเรเดียน
+
+        scene.add(cube2);
+
+        let start;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("start.mtl", function (startMaterials) {
+            startMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(startMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("start.obj", function (object_start) {
+                start = object_start;  // เก็บไว้ในตัวแปรด้านนอก
+                start.scale.set(5, 5, 5);
+                start.position.set(280, 135, 290);
+                start.rotation.y = 1;
+
+                start.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(start);
+                clickableObjects.push(start);
             });
         });
 
@@ -224,6 +339,108 @@
 
                 scene.add(projects);
                 clickableObjects.push(projects);
+            });
+        });
+
+        let credit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("credit.mtl", function (creditMaterials) {
+            creditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(creditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("credit.obj", function (object_credit) {
+                credit = object_credit;  // เก็บไว้ในตัวแปรด้านนอก
+                credit.scale.set(10, 10, 10);
+                credit.position.set(-25, 120, 70);
+                credit.rotation.y = Math.PI / 2;
+
+                credit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(credit);
+                clickableObjects.push(credit);
+            });
+        });
+
+        //backcredit
+        let backcredit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("Backbot.mtl", function (backcreditMaterials) {
+            backcreditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(backcreditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("Backbot.obj", function (object_backcredit) {
+                backcredit = object_backcredit;  // เก็บไว้ในตัวแปรด้านนอก
+                backcredit.scale.set(3, 3, 3);
+                backcredit.position.set(-290, 120, -220);
+
+                backcredit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(backcredit);
+                clickableObjects.push(backcredit);
+            });
+        });
+
+        let nextcredit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("nextbot.mtl", function (nextcreditMaterials) {
+            nextcreditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(nextcreditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("nextbot.obj", function (object_nextcredit) {
+                nextcredit = object_nextcredit;  // เก็บไว้ในตัวแปรด้านนอก
+                nextcredit.scale.set(3, 3, 3);
+                nextcredit.position.set(-255, 120, -220);
+
+                nextcredit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(nextcredit);
+                clickableObjects.push(nextcredit);
+            });
+        });
+
+        let linkhere;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("linkhere.mtl", function (linkhereMaterials) {
+            linkhereMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(linkhereMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("linkhere.obj", function (object_linkhere) {
+                linkhere = object_linkhere;  // เก็บไว้ในตัวแปรด้านนอก
+                linkhere.scale.set(5, 5, 5);
+                linkhere.position.set(-275, 125, -220);
+
+                linkhere.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(linkhere);
+                clickableObjects.push(linkhere);
             });
         });
 
@@ -268,7 +485,7 @@
             objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
             objLoader.load("Backbot.obj", function (object_backProj) {
                 backProj = object_backProj;  // เก็บไว้ในตัวแปรด้านนอก
-                backProj.scale.set(5, 5, 5);
+                backProj.scale.set(3, 3, 3);
                 backProj.position.set(-20, 0, 0);
                 //backProj.rotation.y = Math.PI / 3;
 
@@ -285,6 +502,31 @@
             });
         });
 
+        let tips;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("tips.mtl", function (tipsMaterials) {
+            tipsMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(tipsMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("tips.obj", function (object_tips) {
+                tips = object_tips;  // เก็บไว้ในตัวแปรด้านนอก
+                tips.scale.set(5, 5, 5);
+                tips.position.set(-5, 160, -205);
+                tips.rotation.y = Math.PI / 4;
+
+                tips.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(tips);
+            });
+        });
+
         //Nextbot PROJECTS*
         let nextProj;
         mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
@@ -296,7 +538,7 @@
             objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
             objLoader.load("nextbot.obj", function (object_nextProj) {
                 nextProj = object_nextProj;  // เก็บไว้ในตัวแปรด้านนอก
-                nextProj.scale.set(5, 5, 5);
+                nextProj.scale.set(3, 3, 3);
                 nextProj.position.set(0, 0, 0);
                 //nextProj.rotation.y = Math.PI / 3;
 
@@ -340,14 +582,720 @@
             });
         });
 
-        Group1.position.set(0, 120, -240);
+        //knife
+        let knife;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("knife.mtl", function (knifeMaterials) {
+            knifeMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(knifeMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("knife.obj", function (object_knife) {
+                knife = object_knife;  // เก็บไว้ในตัวแปรด้านนอก
+                knife.scale.set(1, 1, 1);
+                knife.position.set(-40, 165, -500);
+                knife.rotation.y = Math.PI / 2;
+
+                knife.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+
+                        const oldMat = child.material;
+                        child.material = new THREE.MeshStandardMaterial({
+                            map: oldMat.map,
+                            metalness: 1.0,
+                            roughness: 0.2
+                        });
+                    }
+
+                });
+
+                scene.add(knife);
+                clickableObjects.push(knife);
+            });
+        });
+
+        let arrowknife;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("arrow.mtl", function (arrowknifeMaterials) {
+            arrowknifeMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(arrowknifeMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("arrow.obj", function (object_arrowknife) {
+                arrowknife = object_arrowknife;  // เก็บไว้ในตัวแปรด้านนอก
+                arrowknife.scale.set(7, 7, 7);
+                arrowknife.position.set(-40, 175, -501.5);
+                arrowknife.rotation.y = 140.8;
+
+                arrowknife.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(arrowknife);
+            });
+        });
+
+        let m4;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("m4.mtl", function (m4Materials) {
+            m4Materials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(m4Materials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("m4.obj", function (object_m4) {
+                m4 = object_m4;  // เก็บไว้ในตัวแปรด้านนอก
+                m4.scale.set(7, 7, 7);
+                m4.position.set(-30, 160, -520);
+
+
+                m4.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+
+                        const oldMat = child.material;
+                        child.material = new THREE.MeshStandardMaterial({
+                            map: oldMat.map,
+                            metalness: 1.0,
+                            roughness: 0.2
+                        });
+                    }
+
+                });
+
+                scene.add(m4);
+                clickableObjects.push(m4);
+            });
+        });
+
+        let arrowm4;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("arrow.mtl", function (arrowm4Materials) {
+            arrowm4Materials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(arrowm4Materials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("arrow.obj", function (object_arrowm4) {
+                arrowm4 = object_arrowm4;  // เก็บไว้ในตัวแปรด้านนอก
+                arrowm4.scale.set(7, 7, 7);
+                arrowm4.position.set(-30, 175, -520);
+                arrowm4.rotation.y = 140.7;
+
+                arrowm4.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(arrowm4);
+            });
+        });
+
+        let eagle;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("DesertEagle.mtl", function (DesertEagleMaterials) {
+            DesertEagleMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(DesertEagleMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("DesertEagle.obj", function (object_DesertEagle) {
+                eagle = object_DesertEagle;  // เก็บไว้ในตัวแปรด้านนอก
+                eagle.scale.set(7, 7, 7);
+                eagle.position.set(-15, 162, -535);
+
+
+                eagle.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+
+                        const oldMat = child.material;
+                        child.material = new THREE.MeshStandardMaterial({
+                            map: oldMat.map,
+                            metalness: 1.0,
+                            roughness: 0.2
+                        });
+                    }
+
+                });
+
+                scene.add(eagle);
+                clickableObjects.push(eagle);
+            });
+        });
+
+        let arrowEagle;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("arrow.mtl", function (arrowEagleMaterials) {
+            arrowEagleMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(arrowEagleMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("arrow.obj", function (object_arrowEagle) {
+                arrowEagle = object_arrowEagle;  // เก็บไว้ในตัวแปรด้านนอก
+                arrowEagle.scale.set(7, 7, 7);
+                arrowEagle.position.set(-15, 175, -535);
+                arrowEagle.rotation.y = 140.6;
+
+                arrowEagle.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(arrowEagle);
+            });
+        });
+
+        let fiveseven;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("fiveseven.mtl", function (fivesevenMaterials) {
+            fivesevenMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(fivesevenMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("fiveseven.obj", function (object_fiveseven) {
+                fiveseven = object_fiveseven;  // เก็บไว้ในตัวแปรด้านนอก
+                fiveseven.scale.set(6, 6, 6);
+                fiveseven.position.set(0, 160, -550);
+
+
+                fiveseven.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+
+                        const oldMat = child.material;
+                        child.material = new THREE.MeshStandardMaterial({
+                            map: oldMat.map,
+                            metalness: 1.0,
+                            roughness: 0.2
+                        });
+                    }
+
+                });
+
+                scene.add(fiveseven);
+                clickableObjects.push(fiveseven);
+            });
+        });
+
+        let arrow57;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("arrow.mtl", function (arrow57Materials) {
+            arrow57Materials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(arrow57Materials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("arrow.obj", function (object_arrow57) {
+                arrow57 = object_arrow57;  // เก็บไว้ในตัวแปรด้านนอก
+                arrow57.scale.set(7, 7, 7);
+                arrow57.position.set(0, 175, -550);
+                arrow57.rotation.y = 140.5;
+
+                arrow57.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(arrow57);
+            });
+        });
+
+        let terrorist;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("terrorist.mtl", function (terroristMaterials) {
+            terroristMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(terroristMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("terrorist.obj", function (object_terrorist) {
+                terrorist = object_terrorist;  // เก็บไว้ในตัวแปรด้านนอก
+                terrorist.scale.set(15, 15, 15);
+                terrorist.position.set(20, 145, -570);
+
+                terrorist.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+
+                        const originalMaterial = child.material;
+
+                        const celShaderMaterial = new THREE.ShaderMaterial({
+                            uniforms: {
+                                lightDirection: { value: new THREE.Vector3(1, 1, 1).normalize() },
+                                baseColor: { value: originalMaterial.color.clone() },
+                                diffuseMap: { value: originalMaterial.map || new THREE.Texture() },
+                            },
+                            vertexShader: `
+                                varying vec3 vNormal;
+                                varying vec2 vUv;
+                             void main() {
+                                vNormal = normalize(normalMatrix * normal);
+                                vUv = uv;
+                                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                              }
+                          `,
+                            fragmentShader: `
+                                uniform vec3 lightDirection;
+                                uniform vec3 baseColor;
+                                uniform sampler2D diffuseMap;
+                                varying vec3 vNormal;
+                                varying vec2 vUv;
+                                void main() {
+                                    float intensity = dot(vNormal, normalize(lightDirection));
+                                    if(intensity > 0.95) intensity = 1.0;
+                                    else if(intensity > 0.5) intensity = 0.7;
+                                    else intensity = 0.4;
+
+                                    vec4 texColor = texture2D(diffuseMap, vUv);
+                                    gl_FragColor = vec4(baseColor * intensity, 1.0) * texColor;
+                                }
+                            `,
+                            side: THREE.DoubleSide,
+                        });
+
+                        child.material = celShaderMaterial;
+                    }
+                });
+                scene.add(terrorist);
+                clickableObjects.push(terrorist);
+            });
+        });
+
+        let arrowterrorist;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("arrow.mtl", function (arrowterroristMaterials) {
+            arrowterroristMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(arrowterroristMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("arrow.obj", function (object_arrowterrorist) {
+                arrowterrorist = object_arrowterrorist;  // เก็บไว้ในตัวแปรด้านนอก
+                arrowterrorist.scale.set(7, 7, 7);
+                arrowterrorist.position.set(20, 190, -570);
+                arrowterrorist.rotation.y = 140.4;
+
+                arrowterrorist.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(arrowterrorist);
+            });
+        });
+
+        const flagTexture = new THREE.TextureLoader().load("https://lnwn4tt.github.io/Com-graph_HW3/flag.png");
+
+        const vertexShader = `
+        uniform float time;
+        varying vec2 vUv;
+
+        void main() {
+            vUv = uv;
+         vec3 pos = position;
+
+        
+         float wave = sin(pos.y * 5.0 + time * 3.0) * 0.4;
+         pos.z += wave * (pos.x * 0.05 + 1.0);
+
+         gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+         }
+        `;
+
+        const fragmentShader = `
+         varying vec2 vUv;
+         uniform sampler2D flagTex;
+
+        void main() {
+         vec4 color = texture2D(flagTex, vUv);
+         gl_FragColor = color;
+         }
+        `;
+
+        const uniforms = {
+            time: { value: 0.0 },
+            flagTex: { value: flagTexture }
+        };
+
+        const flagMaterial = new THREE.ShaderMaterial({
+            vertexShader,
+            fragmentShader,
+            uniforms,
+            side: THREE.DoubleSide
+        });
+
+        const flagGeo = new THREE.PlaneGeometry(40, 25, 40, 25);
+        const flag = new THREE.Mesh(flagGeo, flagMaterial);
+        flag.position.set(-40, 220, -530.5); // ปรับตำแหน่งได้ตามต้องการ
+        flag.rotation.y = Math.PI / 4;
+        scene.add(flag);
+        clickableObjects.push(flag);
+
+        let knifecredit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("knifecredit.mtl", function (knifecreditMaterials) {
+            knifecreditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(knifecreditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("knifecredit.obj", function (object_knifecredit) {
+                knifecredit = object_knifecredit;  // เก็บไว้ในตัวแปรด้านนอก
+                knifecredit.scale.set(5, 5, 5);
+                knifecredit.position.set(-285, 140, -220);
+
+                knifecredit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+
+                scene.add(knifecredit);
+
+            });
+        });
+
+        let medalcredit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("medalcredit.mtl", function (medalcreditMaterials) {
+            medalcreditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(medalcreditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("medalcredit.obj", function (object_medalcredit) {
+                medalcredit = object_medalcredit;  // เก็บไว้ในตัวแปรด้านนอก
+                medalcredit.scale.set(5, 5, 5);
+                medalcredit.position.set(-285, 140, -220);
+
+                medalcredit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+            });
+        });
+
+        let dust2credit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("dust2credit.mtl", function (dust2creditMaterials) {
+            dust2creditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(dust2creditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("dust2credit.obj", function (object_dust2credit) {
+                dust2credit = object_dust2credit;  // เก็บไว้ในตัวแปรด้านนอก
+                dust2credit.scale.set(5, 5, 5);
+                dust2credit.position.set(-285, 140, -220);
+
+                dust2credit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+            });
+        });
+
+        let akcredit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("akcredit.mtl", function (akcreditMaterials) {
+            akcreditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(akcreditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("akcredit.obj", function (object_akcredit) {
+                akcredit = object_akcredit;  // เก็บไว้ในตัวแปรด้านนอก
+                akcredit.scale.set(5, 5, 5);
+                akcredit.position.set(-285, 140, -220);
+
+                akcredit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+            });
+        });
+
+        let m4credit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("m4credit.mtl", function (m4creditMaterials) {
+            m4creditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(m4creditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("m4credit.obj", function (object_m4credit) {
+                m4credit = object_m4credit;  // เก็บไว้ในตัวแปรด้านนอก
+                m4credit.scale.set(5, 5, 5);
+                m4credit.position.set(-285, 140, -220);
+
+                m4credit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+            });
+        });
+
+        let eaglecredit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("eaglecredit.mtl", function (eaglecreditMaterials) {
+            eaglecreditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(eaglecreditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("eaglecredit.obj", function (object_eaglecredit) {
+                eaglecredit = object_eaglecredit;  // เก็บไว้ในตัวแปรด้านนอก
+                eaglecredit.scale.set(5, 5, 5);
+                eaglecredit.position.set(-285, 140, -220);
+
+                eaglecredit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+            });
+        });
+
+        let fivesevencredit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("fivesevencredit.mtl", function (fivesevencreditMaterials) {
+            fivesevencreditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(fivesevencreditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("fivesevencredit.obj", function (object_fivesevencredit) {
+                fivesevencredit = object_fivesevencredit;  // เก็บไว้ในตัวแปรด้านนอก
+                fivesevencredit.scale.set(5, 5, 5);
+                fivesevencredit.position.set(-285, 140, -220);
+
+                fivesevencredit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+            });
+        });
+
+        let chickcredit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("chickcredit.mtl", function (chickcreditMaterials) {
+            chickcreditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(chickcreditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("chickcredit.obj", function (object_chickcredit) {
+                chickcredit = object_chickcredit;  // เก็บไว้ในตัวแปรด้านนอก
+                chickcredit.scale.set(5, 5, 5);
+                chickcredit.position.set(-285, 140, -220);
+
+                chickcredit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+            });
+        });
+
+        let terroristcredit;
+        mtlLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+        mtlLoader.load("terroristcredit.mtl", function (terroristcreditMaterials) {
+            terroristcreditMaterials.preload();
+
+            const objLoader = new THREE.OBJLoader();
+            objLoader.setMaterials(terroristcreditMaterials);
+            objLoader.setPath("https://lnwn4tt.github.io/Com-graph_HW3/");
+            objLoader.load("terroristcredit.obj", function (object_terroristcredit) {
+                terroristcredit = object_terroristcredit;  // เก็บไว้ในตัวแปรด้านนอก
+                terroristcredit.scale.set(5, 5, 5);
+                terroristcredit.position.set(-285, 140, -220);
+
+                terroristcredit.traverse(function (child) {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = false;
+                    }
+                });
+            });
+        });
+
+        //AK
+        let mixer; // สำหรับ animation
+        const clock = new THREE.Clock();
+        const gltfLoader = new THREE.GLTFLoader();
+        let countanimation = 0;
+
+        gltfLoader.load(
+            "https://lnwn4tt.github.io/Com-graph_HW3/akm_reload_animation.glb",
+            function (gltf) {
+                const model = gltf.scene;
+                model.scale.set(1, 1, 1);
+                model.position.set(45, 135, -180);
+                model.rotation.y = 10.2;
+                scene.add(model);
+
+                model.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+
+                        if (child.material.isMeshStandardMaterial) {
+                            child.material.metalness = 0.1;
+                            child.material.roughness = 0.4;
+                        }
+                    }
+                });
+
+                let mixer;
+
+                window.addEventListener('keydown', (event) => {
+                    if ((event.key === 'r' || event.key === 'R') && countanimation == 1) {
+                        if (gltf.animations && gltf.animations.length > 0) {
+                            mixer = new THREE.AnimationMixer(model);
+
+                            mixer.addEventListener('finished', (e) => {
+                                console.log("Animation finished!");
+                                countanimation = 1;
+                            });
+
+                            gltf.animations.forEach((clip) => {
+                                const action = mixer.clipAction(clip);
+                                action.setLoop(THREE.LoopOnce, 0);
+                                action.clampWhenFinished = true;
+                                action.reset();
+                                action.play();
+                                countanimation = 0;
+
+                            });
+                        }
+                    }
+                });
+
+                const clock = new THREE.Clock();
+                function animate() {
+                    requestAnimationFrame(animate);
+                    const delta = clock.getDelta();
+                    if (mixer) mixer.update(delta);
+                    renderer.render(scene, camera);
+                }
+                animate();
+            },
+            undefined
+        );
+
+        let isTracking = false;
+
+        function stopTracking() {
+            isTracking = false;
+        }
+        let countchick = 0;
+        let chickmodel; // ประกาศนอก loader เพื่อให้เข้าถึงได้จาก scope อื่น
+
+        gltfLoader.load(
+            "https://lnwn4tt.github.io/Com-graph_HW3/animal__food__chicken_model_cs2.glb",
+            function (gltfchick) {
+                chickmodel = gltfchick.scene;
+                chickmodel.scale.set(5, 5, 5);
+                chickmodel.position.set(0, 120, -240);
+                chickmodel.rotation.y = 10.2;
+                scene.add(chickmodel);
+
+                chickmodel.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                });
+
+                if (gltfchick.animations && gltfchick.animations.length > 0) {
+                    mixer = new THREE.AnimationMixer(chickmodel);
+                    const clip = gltfchick.animations[15];
+                    const action = mixer.clipAction(clip);
+                    action.play();
+                }
+
+                let speed = 0.1;
+                let direction = 1;
+                const minZ = -220;
+                const maxZ = -175;
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    const delta = clock.getDelta();
+
+                    if (mixer) mixer.update(delta);
+
+                    // เดินไปมา
+                    chickmodel.position.z += speed * direction;
+                    if (chickmodel.position.z > maxZ) direction = -1;
+                    if (chickmodel.position.z < minZ) direction = 1;
+                    chickmodel.rotation.y = direction === 1 ? 0 : Math.PI;
+
+                    if (isTracking && chickmodel) {
+                        controls.target.lerp(chickmodel.position.clone(), 0.05);
+                    }
+
+                    controls.update();
+                    renderer.render(scene, camera);
+                }
+                animate();
+            },
+            undefined
+        );
+
+        document.addEventListener('keydown', (e) => {
+            if ((event.key === 't' || event.key === 'T') && countchick == 1) {
+                isTracking = !isTracking;
+
+            }
+        });
+
+
+
+        Group1.position.set(20, 120, -205);
         Group1.rotation.y = Math.PI / 4;
 
         //click
         const clicksound = new Audio("https://lnwn4tt.github.io/Com-graph_HW3/minecraft-click-cropped.mp3");
         clicksound.volume = 0.3;
 
-        let countMedal = 0;
+        let count = 0;
+        let creditPage = 0;
 
         window.addEventListener('click', (event) => {
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -363,7 +1311,7 @@
 
                 // เปลี่ยนสี object ที่โดน
                 clickedObj.traverse((child) => {
-                    if (child.isMesh && !medal.children.includes(child)) {
+                    if ((child.isMesh && !medal.children.includes(child)) && !knife && !m4 && !eagle && !fiveseven && !chickmodel && !flag) {
                         child.material.color.set(0x00ff00);
                     }
                 });
@@ -375,10 +1323,147 @@
                     controls.update();
 
                 } else if (intersects[0].object.parent === projects) {
-                    controls.enabled = false;
+                    //controls.enabled = false;
+                    countchick = 1;
+                    countanimation = 1;
                     targetPos.set(40, 135, -180);
                     targetLookAt.set(30, 135, -190);
                     controls.update();
+
+                } else if (intersects[0].object.parent === credit) {
+                    controls.enabled = false;
+                    targetPos.set(-270, 135, -190);
+                    targetLookAt.set(-270, 135, -200);
+                    controls.update();
+
+                } else if (intersects[0].object.parent === backcredit) {
+                    if (creditPage == 0) {
+                        controls.enabled = true;
+                        targetPos.set(40, 135, 40);
+                        targetLookAt.set(-180, 135, 40);
+                        controls.update();
+
+                    } else if (creditPage == 1) {
+                        scene.remove(medalcredit);
+                        scene.add(knifecredit);
+                        creditPage = 0;
+
+                    } else if (creditPage == 2) {
+                        scene.remove(dust2credit);
+                        scene.add(medalcredit);
+                        creditPage = 1;
+
+                    } else if (creditPage == 3) {
+                        scene.remove(akcredit);
+                        scene.add(dust2credit);
+                        creditPage = 2;
+
+                    } else if (creditPage == 4) {
+                        scene.remove(m4credit);
+                        scene.add(akcredit);
+                        creditPage = 3;
+
+                    } else if (creditPage == 5) {
+                        scene.remove(eaglecredit);
+                        scene.add(m4credit);
+                        creditPage = 4;
+
+                    } else if (creditPage == 6) {
+                        scene.remove(fivesevencredit);
+                        scene.add(eaglecredit);
+                        creditPage = 5;
+
+                    } else if (creditPage == 7) {
+                        scene.remove(chickcredit);
+                        scene.add(fivesevencredit);
+
+                        creditPage = 6;
+
+                    } else if (creditPage == 8) {
+                        scene.remove(terroristcredit);
+                        scene.add(chickcredit);
+                        scene.add(nextcredit);
+                        creditPage = 7;
+
+                    }
+
+
+                } else if (intersects[0].object.parent === nextcredit) {
+
+                    if (creditPage == 0) {
+                        scene.remove(knifecredit);
+                        scene.add(medalcredit);
+                        creditPage = 1;
+
+                    } else if (creditPage == 1) {
+                        scene.remove(medalcredit);
+                        scene.add(dust2credit);
+                        creditPage = 2;
+
+                    } else if (creditPage == 2) {
+                        scene.remove(dust2credit);
+                        scene.add(akcredit);
+                        creditPage = 3;
+
+                    } else if (creditPage == 3) {
+                        scene.remove(akcredit);
+                        scene.add(m4credit);
+                        creditPage = 4;
+
+                    } else if (creditPage == 4) {
+                        scene.remove(m4credit);
+                        scene.add(eaglecredit);
+                        creditPage = 5;
+
+                    } else if (creditPage == 5) {
+                        scene.remove(eaglecredit);
+                        scene.add(fivesevencredit);
+                        creditPage = 6;
+
+                    } else if (creditPage == 6) {
+                        scene.remove(fivesevencredit);
+                        scene.add(chickcredit);
+                        creditPage = 7;
+
+                    } else if (creditPage == 7) {
+                        scene.remove(chickcredit);
+                        scene.add(terroristcredit);
+                        scene.remove(nextcredit);
+                        creditPage = 8;
+
+                    }
+
+
+                } else if (intersects[0].object.parent === linkhere) {
+
+                    if (creditPage == 0) {
+                        window.open("https://sketchfab.com/3d-models/csgo-t-knife-4fec04c045844a22b77b6e645efed628", "_blank");
+
+                    } else if (creditPage == 1) {
+                        window.open("https://sketchfab.com/3d-models/medal-cs2-csgo-coin-245bca46e61d4d4297eb659225e185ee", "_blank");
+
+                    } else if (creditPage == 2) {
+                        window.open("https://sketchfab.com/3d-models/de-dust2-2020-d7fe8d2107ea4b6c9a3fdde6f0261f63", "_blank");
+
+                    } else if (creditPage == 3) {
+                        window.open("https://sketchfab.com/3d-models/akm-reload-animation-5e5b027e946c45658eea4342876645f8", "_blank");
+
+                    } else if (creditPage == 4) {
+                        window.open("https://sketchfab.com/3d-models/csgo-weapon-m4a1-s-printstream-74d525338c2f42c29fa16c38ef847060", "_blank");
+
+                    } else if (creditPage == 5) {
+                        window.open("https://sketchfab.com/3d-models/desert-eagle-334462df58b942759122567fa0b81113", "_blank");
+
+                    } else if (creditPage == 6) {
+                        window.open("https://sketchfab.com/3d-models/five-seven-csgo-skin-pink-2c85efbc1145438dae857527a2e0abcb", "_blank");
+
+                    } else if (creditPage == 7) {
+                        window.open("https://sketchfab.com/3d-models/animal-food-chicken-model-cs2-7c72450ac7e0472eb9b647b6efee2984", "_blank");
+
+                    } else if (creditPage == 8) {
+                        window.open("https://sketchfab.com/3d-models/cs2-terrorist-819cae24597f467aa975b05ee5528fd0", "_blank");
+                    }
+
 
                 } else if (intersects[0].object.parent === backbot) {
                     controls.enabled = true;
@@ -389,33 +1474,155 @@
                 } else if (intersects[0].object.parent === medal) {
                     controls.enabled = false;
 
-                    if (countMedal == 0) {
+                    if (count == 0) {
                         targetPos.set(25, 135, 20);
                         targetLookAt.set(-180, 135, 40);
                         controls.update();
-                        countMedal = 1;
-                    } else if (countMedal == 1) {
+                        count = 1;
+                    } else if (count == 1) {
+                        controls.enabled = true;
                         targetPos.set(40, 135, 40);         // ตำแหน่งกล้องที่อยากไป
                         targetLookAt.set(-180, 135, 40);
                         controls.update();
-                        countMedal = 0;
+                        count = 0;
                     }
 
                 } else if (intersects[0].object.parent === backProj) {
                     controls.enabled = true;
+                    countchick = 0;
+                    countanimation = 0;
                     targetPos.set(40, 135, 40);
                     targetLookAt.set(-180, 135, 40);
                     controls.update();
+                    stopTracking();
 
                 } else if (intersects[0].object.parent === nextProj) {
                     controls.enabled = true;
-                    targetPos.set(30, 165, -470);         
+                    countchick = 0;
+                    countanimation = 0;
+                    targetPos.set(30, 165, -470);
                     targetLookAt.set(20, 165, -480);
                     controls.update();
+                    stopTracking();
+
                 } else if (intersects[0].object.parent === backProj2) {
-                    controls.enabled = false;
+                    controls.enabled = true;
+                    countchick = 1;
+                    countanimation = 1;
                     targetPos.set(40, 135, -180);
                     targetLookAt.set(30, 135, -190);
+                    controls.update();
+                } else if (intersects[0].object.parent === knife) {
+                    //controls.enabled = false;
+                    controls.update();
+
+                    if (count == 0) {
+                        targetPos.set(-30, 165, -490);
+                        targetLookAt.set(-40, 165, -500);
+                        controls.update();
+                        count = 1;
+                        spotLightKnife.target = knife;
+                        spotLightKnife.power = 1.0;
+                    } else if (count == 1) {
+                        //controls.enabled = true;
+                        targetPos.set(30, 165, -470);         // ตำแหน่งกล้องที่อยากไป
+                        targetLookAt.set(20, 165, -480);
+                        controls.update();
+                        count = 0;
+                        spotLightKnife.power = 0;
+                    }
+                } else if (intersects[0].object.parent === m4) {
+                    controls.update();
+
+                    if (count == 0) {
+                        targetPos.set(-20, 165, -510);
+                        targetLookAt.set(-30, 165, -520);
+                        controls.update();
+                        count = 1;
+                        spotLightM4.target = m4;
+                        spotLightM4.power = 1.0;
+                    } else if (count == 1) {
+                        //controls.enabled = true;
+                        targetPos.set(30, 165, -470);         // ตำแหน่งกล้องที่อยากไป
+                        targetLookAt.set(20, 165, -480);
+                        controls.update();
+                        count = 0;
+                        spotLightM4.power = 0;
+                    }
+                } else if (intersects[0].object.parent === eagle) {
+                    controls.update();
+
+                    if (count == 0) {
+                        targetPos.set(-5, 165, -525);
+                        targetLookAt.set(-15, 165, -535);
+                        controls.update();
+                        count = 1;
+                        spotLightEagle.target = eagle;
+                        spotLightEagle.power = 1.0;
+                    } else if (count == 1) {
+                        //controls.enabled = true;
+                        targetPos.set(30, 165, -470);         // ตำแหน่งกล้องที่อยากไป
+                        targetLookAt.set(20, 165, -480);
+                        controls.update();
+                        count = 0;
+                        spotLightEagle.power = 0;
+                    }
+                } else if (intersects[0].object.parent === fiveseven) {
+                    controls.update();
+
+                    if (count == 0) {
+                        targetPos.set(10, 165, -540);
+                        targetLookAt.set(0, 165, -550);
+                        controls.update();
+                        count = 1;
+                        spotLightfiveseven.target = fiveseven;
+                        spotLightfiveseven.power = 1.0;
+                    } else if (count == 1) {
+                        //controls.enabled = true;
+                        targetPos.set(30, 165, -470);         // ตำแหน่งกล้องที่อยากไป
+                        targetLookAt.set(20, 165, -480);
+                        controls.update();
+                        count = 0;
+                        spotLightfiveseven.power = 0;
+                    }
+                } else if (intersects[0].object === flag) {
+                    controls.update();
+
+                    if (count == 0) {
+                        targetPos.set(-30, 220, -520.5);
+                        targetLookAt.set(-40, 220, -530.5);
+                        controls.update();
+                        count = 1;
+
+                    } else if (count == 1) {
+                        targetPos.set(30, 165, -470);         // ตำแหน่งกล้องที่อยากไป
+                        targetLookAt.set(20, 165, -480);
+                        controls.update();
+                        count = 0;
+                    }
+
+                } else if (intersects[0].object.parent === terrorist) {
+                    controls.update();
+
+                    if (count == 0) {
+                        targetPos.set(50, 165, -540);
+                        targetLookAt.set(40, 165, -550);
+                        controls.update();
+                        count = 1;
+                        spotLightterrorist.target = terrorist;
+                        spotLightterrorist.power = 1.0;
+                    } else if (count == 1) {
+                        //controls.enabled = true;
+                        targetPos.set(30, 165, -470);         // ตำแหน่งกล้องที่อยากไป
+                        targetLookAt.set(20, 165, -480);
+                        controls.update();
+                        count = 0;
+                        spotLightterrorist.power = 0;
+                    }
+                } else if (intersects[0].object.parent === start) {
+                    controls.enabled = true;
+                    targetPos.set(40, 135, 40);         
+                    targetLookAt.set(-180, 135, 40);
                     controls.update();
                 }
             }
@@ -432,8 +1639,8 @@
         let hovered = null; // เก็บ object ที่โดน hover อยู่
         let originalColor = null; // เก็บสีเดิม
 
-        let hoveredObjects = { aboutMe: null, projects: null, backbot: null, backProj: null, nextProj: null, backProj2: null };
-        let originalColors = { aboutMe: null, projects: null, backbot: null, backProj: null, nextProj: null, backProj2: null };
+        let hoveredObjects = { aboutMe: null, projects: null, backbot: null, backProj: null, nextProj: null, backProj2: null, credit: null, backcredit: null, nextcredit: null, linkhere: null, start: null };
+        let originalColors = { aboutMe: null, projects: null, backbot: null, backProj: null, nextProj: null, backProj2: null, credit: null, backcredit: null, nextcredit: null, linkhere: null, start: null };
 
         function checkIntersection() {
             raycaster.setFromCamera(mouse, camera);
@@ -444,6 +1651,11 @@
             handleHover(backProj, "backProj");
             handleHover(nextProj, "nextProj");
             handleHover(backProj2, "backProj2");
+            handleHover(credit, "credit");
+            handleHover(backcredit, "backcredit");
+            handleHover(nextcredit, "nextcredit");
+            handleHover(linkhere, "linkhere");
+            handleHover(start, "start")
         }
 
         function handleHover(obj, key) {
@@ -494,19 +1706,33 @@
         }
 
         const tlerp = 0.0;
-
         const speed = 2; // ความเร็ว
         const distance = 75; // ระยะที่แสงจะเคลื่อนที่ไป
+
         let t = 0.0;
+
         function animate() {
             controls.update();
 
+            const delta = clock.getDelta();
+            if (mixer) mixer.update(delta);
             //tlerp +=0.02;
             t += 0.001;
             requestAnimationFrame(animate);
             checkIntersection();
             if (medal) {
                 medal.rotation.y += 0.01;
+
+                uniforms.time.value = clock.getElapsedTime();
+
+                const floatY = Math.sin(t * 10) * 3; // ปรับความเร็ว (2) และระยะ (2) ได้ตามต้องการ
+                medal.position.y = 110 + floatY;
+                arrowMedal.position.y = 150 + floatY;
+                arrowknife.position.y = 175 + floatY;
+                arrowm4.position.y = 175 + floatY;
+                arrowEagle.position.y = 175 + floatY;
+                arrow57.position.y = 175 + floatY;
+                arrowterrorist.position.y = 190 + floatY;
             }
             spotLight2.position.x = Math.sin(t * speed) * distance;
 
